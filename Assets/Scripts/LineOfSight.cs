@@ -3,11 +3,13 @@ using UnityEngine.Events;
 
 public class LineOfSight : MonoBehaviour
 {
-    [SerializeField] Transform targer;
+    [SerializeField] Transform target;
     EvilJeffStates state;
 
-    [SerializeField] LayerMask enviromentLayer;
+    [SerializeField] LayerMask environmentLayer;
     public UnityEvent SawPlayer;
+
+    [SerializeField] float sightRadius = 0.25f; 
     void Update()
     {
         switch (state)
@@ -21,30 +23,32 @@ public class LineOfSight : MonoBehaviour
             case EvilJeffStates.INVESTUGATE:
                 break;
         }
-        Vector3 directionToTargetn = (transform.position - targer.position).normalized;
+        Vector3 directionToTarget = (target.position - transform.position);
+        directionToTarget.y = 0;
+        directionToTarget.Normalize(); 
         Vector3 forwardDirection = transform.forward;
 
-        float dot = Vector3.Dot(forwardDirection, directionToTargetn);
+        float dot = Vector3.Dot(forwardDirection, directionToTarget);
         
-        if (dot > 0.25f)
-        {
-            Debug.DrawLine(transform.position, targer.position, Color.red);
-            Debug.Log("Behind the Enemy");
-        }
-        else //(dot < 0.5f)
+        if (dot > sightRadius)
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, targer.position, out hit, 1000, enviromentLayer))
+            if (Physics.Raycast(transform.position, directionToTarget, out hit, 10000, environmentLayer))
             {
-                Debug.DrawLine(transform.position, targer.position, Color.red);
+                Debug.DrawLine(transform.position, target.position, Color.magenta);
                 Debug.Log("Saw a wall");
-                SawPlayer?.Invoke();
             }
             else
             {
-                Debug.DrawLine(transform.position, targer.position, Color.green);
+                Debug.DrawLine(transform.position, target.position, Color.green);
                 Debug.Log("Saw the Player");
+                SawPlayer?.Invoke();
             }
+        }
+        else //(dot < 0.5f)
+        {
+            Debug.DrawLine(transform.position, target.position, Color.red);
+            Debug.Log("I Saw Nothing");
         }
     }
 }

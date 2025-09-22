@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
@@ -26,8 +27,11 @@ public class Navigator : MonoBehaviour
     Transform currentPatrolPoint;
     int patrolPointIndex;
 
-    float elapsed = 0; 
-    bool agiantStop = false;
+    float elapsed = 0;
+    public bool agentStop = false;
+
+    [SerializeField] float distanceThreshold = 2;
+    [SerializeField] bool isInvestigating = false;
 
     void Start()
     {
@@ -39,7 +43,7 @@ public class Navigator : MonoBehaviour
     }
     void Update()
     {
-        if (agiantStop == true)
+        if (agentStop == true)
         {
             agent.isStopped = true;
         }
@@ -47,31 +51,28 @@ public class Navigator : MonoBehaviour
         {
             agent.isStopped = false;
         }
-            switch (state)
-            {
-                case EvilJeffStates.IDEL:
-                    UpdateIdel();
-                    break;
-                case EvilJeffStates.CHASE:
-                    UpdateChase();
-                    break;
-                case EvilJeffStates.WONDER:
-                    UpdateWonder();
-                    break;
-                case EvilJeffStates.INVESTUGATE:
-                    UpdateInvestugate();
-                    break;
-            }
-      
-    }
-    void UpdateIdel()
-    {
-        agiantStop = true;
         elapsed += Time.deltaTime;
-        if (elapsed > 3.0f)
+
+        switch (state)
         {
-            elapsed = 0;
+            case EvilJeffStates.IDEL:
+                UpdateIdle();
+                break;
+            case EvilJeffStates.CHASE:
+                UpdateChase();
+                break;
+            case EvilJeffStates.WONDER:
+                UpdateWonder();
+                break;
+            case EvilJeffStates.INVESTUGATE:
+                UpdateInvestigate();
+                break;
         }
+
+    }
+    void UpdateIdle()
+    {
+        agentStop = true;
         if (elapsed >= 2)
         {
             elapsed = 0;
@@ -80,27 +81,85 @@ public class Navigator : MonoBehaviour
     }
     void UpdateWonder()
     {
-        agiantStop = false;
+        agentStop = false;
         agent.SetDestination(currentPatrolPoint.position);
-        float distance = Vector3.Distance(transform.position, currentPatrolPoint.position);
-        if (distance < 2)
+        if (elapsed > 2)
         {
-            patrolPointIndex++;
-            if (patrolPointIndex >= patrolPoints.Length)
+            float distance = Vector3.Distance(transform.position, currentPatrolPoint.position);
+            if (distance < 2)
             {
-                patrolPointIndex = 0;
+                patrolPointIndex++;
+                if (patrolPointIndex >= patrolPoints.Length)
+                {
+                    patrolPointIndex = 0;
+                }
+                currentPatrolPoint = patrolPoints[patrolPointIndex];
+                agent.SetDestination(currentPatrolPoint.position);
+                state = EvilJeffStates.IDEL;
             }
-            currentPatrolPoint = patrolPoints[patrolPointIndex];
-            agent.SetDestination(currentPatrolPoint.position);
-            state = EvilJeffStates.IDEL;
+            elapsed = 0;
         }
         Debug.DrawLine(transform.position, currentPatrolPoint.position, Color.yellow);
     }
     void UpdateChase()
     {
-        agiantStop = true;
-        elapsed += Time.deltaTime;
-        if (elapsed > 5)
+        //agentStop = true;
+        //    if (agent.CalculatePath(target.position, navPath))
+        //    {
+        //        remainingPoints.Clear();
+        //        Debug.Log("Found a path to target");
+        //        foreach (Vector3 p in navPath.corners)
+        //        {
+        //            remainingPoints.Enqueue(p);
+        //        }
+        //        currentTargetPoint = remainingPoints.Dequeue();
+        //    }
+
+        //Vector3 new_Forward = (currentTargetPoint - transform.position).normalized;
+        //new_Forward.y = 0;
+        //transform.forward = new_Forward;
+        //float distanceToPoint = Vector3.Distance(transform.position, currentTargetPoint);
+
+        //if (distanceToPoint < distanceThreshold)
+        //{
+        //    currentTargetPoint = remainingPoints.Dequeue();
+        //}
+    }
+    void UpdateInvestigate()
+    {
+        agentStop = true;
+        if (agent.CalculatePath(target.position, navPath))
+        {
+            remainingPoints.Clear();
+            Debug.Log("Found a path to target");
+            foreach (Vector3 p in navPath.corners)
+            {
+                remainingPoints.Enqueue(p);
+            }
+            currentTargetPoint = remainingPoints.Dequeue();
+            currentTargetPoint = remainingPoints.Dequeue();
+        }
+
+        Vector3 new_Forward = (currentTargetPoint - transform.position).normalized;
+        new_Forward.y = 0;
+        transform.forward = new_Forward;
+        float distToPoint = Vector3.Distance(transform.position, currentTargetPoint);
+
+        if (remainingPoints.Count == 0)
+        {
+            state = EvilJeffStates.IDEL;
+            elapsed = 0;
+            return;
+        }
+
+        if (distToPoint < distanceThreshold)
+        {
+            currentTargetPoint = remainingPoints.Dequeue();
+        }
+    }
+    IEnumerator TimeInvestigate()
+    {
+        if (isInvestigating == true)
         {
             if (agent.CalculatePath(target.position, navPath))
             {
@@ -111,31 +170,24 @@ public class Navigator : MonoBehaviour
                     remainingPoints.Enqueue(p);
                 }
                 currentTargetPoint = remainingPoints.Dequeue();
+                currentTargetPoint = remainingPoints.Dequeue();
             }
-            elapsed = 0;
-        }
-        Vector3 new_Foward = (currentTargetPoint - transform.position).normalized;
-        new_Foward.y = 0;
-        transform.forward = new_Foward;
-        float distToPoint = Vector3.Distance(transform.position, currentTargetPoint);
 
-        if (distToPoint < 2)
-        {
-            currentTargetPoint = remainingPoints.Dequeue();
-        }
-    }
-    void UpdateInvestugate()
-    {
-        if (agent.CalculatePath(target.position, navPath))
-        {
-            remainingPoints.Clear();
-            Debug.Log("Found a path to target");
-            foreach (Vector3 p in navPath.corners)
+            Vector3 new_Forward = (currentTargetPoint - transform.position).normalized;
+            new_Forward.y = 0;
+            transform.forward = new_Forward;
+            float distToPoint = Vector3.Distance(transform.position, currentTargetPoint);
+
+            if (distToPoint < distanceThreshold)
             {
-                remainingPoints.Enqueue(p);
+                currentTargetPoint = remainingPoints.Dequeue();
             }
-            currentTargetPoint = remainingPoints.Dequeue();
         }
+        yield return 0;
+    } 
+    public void PlayerDetected()
+    {
+        state = EvilJeffStates.INVESTUGATE;
     }
     private void FixedUpdate()
     {
