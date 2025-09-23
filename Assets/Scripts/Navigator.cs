@@ -58,9 +58,6 @@ public class Navigator : MonoBehaviour
             case EvilJeffStates.IDEL:
                 UpdateIdle();
                 break;
-            case EvilJeffStates.CHASE:
-                UpdateChase();
-                break;
             case EvilJeffStates.WONDER:
                 UpdateWonder();
                 break;
@@ -101,33 +98,38 @@ public class Navigator : MonoBehaviour
         }
         Debug.DrawLine(transform.position, currentPatrolPoint.position, Color.yellow);
     }
-    void UpdateChase()
+
+    void UpdateInvestigate()
     {
-        //agentStop = true;
-        //    if (agent.CalculatePath(target.position, navPath))
+        agentStop = true;
+        //if (agent.CalculatePath(target.position, navPath))
+        //{
+        //    remainingPoints.Clear();
+        //    Debug.Log("Found a path to target");
+        //    foreach (Vector3 p in navPath.corners)
         //    {
-        //        remainingPoints.Clear();
-        //        Debug.Log("Found a path to target");
-        //        foreach (Vector3 p in navPath.corners)
-        //        {
-        //            remainingPoints.Enqueue(p);
-        //        }
-        //        currentTargetPoint = remainingPoints.Dequeue();
+        //        remainingPoints.Enqueue(p);
         //    }
+        //    currentTargetPoint = remainingPoints.Dequeue();
+        //    currentTargetPoint = remainingPoints.Dequeue();
+        //}
 
         //Vector3 new_Forward = (currentTargetPoint - transform.position).normalized;
         //new_Forward.y = 0;
         //transform.forward = new_Forward;
-        //float distanceToPoint = Vector3.Distance(transform.position, currentTargetPoint);
+        //float distToPoint = Vector3.Distance(transform.position, currentTargetPoint);
 
-        //if (distanceToPoint < distanceThreshold)
+        //if (remainingPoints.Count <= 0)
+        //{
+        //    state = EvilJeffStates.IDEL;
+        //    elapsed = 0;
+        //    return;
+        //}
+
+        //if (distToPoint < distanceThreshold)
         //{
         //    currentTargetPoint = remainingPoints.Dequeue();
         //}
-    }
-    void UpdateInvestigate()
-    {
-        agentStop = true;
         if (agent.CalculatePath(target.position, navPath))
         {
             remainingPoints.Clear();
@@ -144,14 +146,13 @@ public class Navigator : MonoBehaviour
         new_Forward.y = 0;
         transform.forward = new_Forward;
         float distToPoint = Vector3.Distance(transform.position, currentTargetPoint);
-
-        if (remainingPoints.Count == 0)
+        if (remainingPoints.Count <= 0)
         {
-            state = EvilJeffStates.IDEL;
+            isInvestigating = false;
             elapsed = 0;
+            state = EvilJeffStates.IDEL;
             return;
         }
-
         if (distToPoint < distanceThreshold)
         {
             currentTargetPoint = remainingPoints.Dequeue();
@@ -159,6 +160,8 @@ public class Navigator : MonoBehaviour
     }
     IEnumerator TimeInvestigate()
     {
+        isInvestigating = true;
+        Debug.Log("Started Investigating");
         if (isInvestigating == true)
         {
             if (agent.CalculatePath(target.position, navPath))
@@ -177,13 +180,19 @@ public class Navigator : MonoBehaviour
             new_Forward.y = 0;
             transform.forward = new_Forward;
             float distToPoint = Vector3.Distance(transform.position, currentTargetPoint);
-
+            if (remainingPoints.Count <= 0)
+            {
+                Debug.Log("Stopped Investigating");
+                isInvestigating = false;
+                elapsed = 0;
+                state = EvilJeffStates.IDEL;
+                yield return 0;
+            }
             if (distToPoint < distanceThreshold)
             {
                 currentTargetPoint = remainingPoints.Dequeue();
             }
         }
-        yield return 0;
     } 
     public void PlayerDetected()
     {

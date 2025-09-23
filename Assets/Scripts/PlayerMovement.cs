@@ -24,10 +24,10 @@ public class PlayerMovement : MonoBehaviour
         isSneaking = false;
         isSprinting = false;
     }
+
 // Update is called once per frame
 void Update()
     {
-        
 
     }
 
@@ -35,8 +35,6 @@ void Update()
     {
         moveInput = v.Get<Vector2>();
         MovingVector = new Vector3(moveInput.x, 0, moveInput.y);
-
-        
     }
     public void OnCrouch()
     {
@@ -48,31 +46,28 @@ void Update()
     }
     private void FixedUpdate()
     {
-        var forward = cameraTransform.transform.forward;
-        var right = cameraTransform.transform.right;
+        //var forward = cameraTransform.transform.forward;
+        //var right = cameraTransform.transform.right;
 
-        forward.y = 0f;
-        right.y = 0f;
-        forward.Normalize();
-        right.Normalize();
+        //forward.y = 0f;
+        //right.y = 0f;
+        //forward.Normalize();
+        //right.Normalize();
 
-        Vector3 desiredMoveDirection = forward * MovingVector.z + right * MovingVector.x;
+        //Vector3 desiredMoveDirection = forward * MovingVector.z + right * MovingVector.x;
 
-        MovingVector = desiredMoveDirection;
+        //MovingVector = desiredMoveDirection;
 
         if (isSneaking)
         {
-            //transform.Translate(desiredMoveDirection * speed * Time.deltaTime);
             rb.AddForce(MovingVector * (speed * 0.5f), ForceMode.Acceleration);
         }
         else if (isSprinting)
         {
-            //transform.Translate(desiredMoveDirection * speed * Time.deltaTime);
             rb.AddForce(MovingVector * (speed * 1.5f), ForceMode.Acceleration);
         }
         else
         {
-            //transform.Translate(desiredMoveDirection * speed * Time.deltaTime);
             rb.AddForce(MovingVector * speed, ForceMode.Acceleration);
         }
     }
