@@ -19,7 +19,7 @@ public class Navigator : MonoBehaviour
     [SerializeField] float speed;
     NavMeshPath navPath;
     Queue<Vector3> remainingPoints;
-    Vector3 currentTargetPoint;
+    Vector3 playerPosition;
 
     [SerializeField] EvilJeffStates state = EvilJeffStates.IDEL;
 
@@ -102,34 +102,6 @@ public class Navigator : MonoBehaviour
     void UpdateInvestigate()
     {
         agentStop = true;
-        //if (agent.CalculatePath(target.position, navPath))
-        //{
-        //    remainingPoints.Clear();
-        //    Debug.Log("Found a path to target");
-        //    foreach (Vector3 p in navPath.corners)
-        //    {
-        //        remainingPoints.Enqueue(p);
-        //    }
-        //    currentTargetPoint = remainingPoints.Dequeue();
-        //    currentTargetPoint = remainingPoints.Dequeue();
-        //}
-
-        //Vector3 new_Forward = (currentTargetPoint - transform.position).normalized;
-        //new_Forward.y = 0;
-        //transform.forward = new_Forward;
-        //float distToPoint = Vector3.Distance(transform.position, currentTargetPoint);
-
-        //if (remainingPoints.Count <= 0)
-        //{
-        //    state = EvilJeffStates.IDEL;
-        //    elapsed = 0;
-        //    return;
-        //}
-
-        //if (distToPoint < distanceThreshold)
-        //{
-        //    currentTargetPoint = remainingPoints.Dequeue();
-        //}
         if (agent.CalculatePath(target.position, navPath))
         {
             remainingPoints.Clear();
@@ -138,15 +110,17 @@ public class Navigator : MonoBehaviour
             {
                 remainingPoints.Enqueue(p);
             }
-            currentTargetPoint = remainingPoints.Dequeue();
-            currentTargetPoint = remainingPoints.Dequeue();
+            playerPosition = remainingPoints.Dequeue();
+            playerPosition = remainingPoints.Dequeue();
         }
 
-        Vector3 new_Forward = (currentTargetPoint - transform.position).normalized;
+        Vector3 new_Forward = (playerPosition - transform.position).normalized;
         new_Forward.y = 0;
         transform.forward = new_Forward;
-        float distToPoint = Vector3.Distance(transform.position, currentTargetPoint);
-        if (remainingPoints.Count <= 0)
+
+        float distToPoint = Vector3.Distance(transform.position, playerPosition);
+        Debug.Log("Queue: " + remainingPoints.Count);
+        if (remainingPoints.Count <= 0 && distToPoint < distanceThreshold)
         {
             isInvestigating = false;
             elapsed = 0;
@@ -155,7 +129,7 @@ public class Navigator : MonoBehaviour
         }
         if (distToPoint < distanceThreshold)
         {
-            currentTargetPoint = remainingPoints.Dequeue();
+            playerPosition = remainingPoints.Dequeue();
         }
     }
     IEnumerator TimeInvestigate()
@@ -172,14 +146,14 @@ public class Navigator : MonoBehaviour
                 {
                     remainingPoints.Enqueue(p);
                 }
-                currentTargetPoint = remainingPoints.Dequeue();
-                currentTargetPoint = remainingPoints.Dequeue();
+                playerPosition = remainingPoints.Dequeue();
+                playerPosition = remainingPoints.Dequeue();
             }
 
-            Vector3 new_Forward = (currentTargetPoint - transform.position).normalized;
+            Vector3 new_Forward = (playerPosition - transform.position).normalized;
             new_Forward.y = 0;
             transform.forward = new_Forward;
-            float distToPoint = Vector3.Distance(transform.position, currentTargetPoint);
+            float distToPoint = Vector3.Distance(transform.position, playerPosition);
             if (remainingPoints.Count <= 0)
             {
                 Debug.Log("Stopped Investigating");
@@ -190,7 +164,7 @@ public class Navigator : MonoBehaviour
             }
             if (distToPoint < distanceThreshold)
             {
-                currentTargetPoint = remainingPoints.Dequeue();
+                playerPosition = remainingPoints.Dequeue();
             }
         }
     } 

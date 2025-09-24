@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public bool isSneaking;
     public bool isSprinting;
 
-    [SerializeField] Transform cameraTransform;
+    //[SerializeField] Transform cameraTransform;
     Vector3 MovingVector;
     Rigidbody rb;
 
@@ -60,7 +60,7 @@ void Update()
 
         if (isSneaking)
         {
-            rb.AddForce(MovingVector * (speed * 0.5f), ForceMode.Acceleration);
+            rb.AddForce(MovingVector * (speed * 0.75f), ForceMode.Acceleration);
         }
         else if (isSprinting)
         {

@@ -2433,6 +2433,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Evil Jeff (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1851407401903729776, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
+      propertyPath: PlayerMovement
+      value: 
+      objectReference: {fileID: 894631241}
     - target: {fileID: 2501351449381872380, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
       propertyPath: target
       value: 
@@ -4031,7 +4035,6 @@ MonoBehaviour:
   speed: 10
   isSneaking: 0
   isSprinting: 0
-  cameraTransform: {fileID: 0}
 --- !u!114 &894631242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7936,6 +7939,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Evil Jeff (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1851407401903729776, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
+      propertyPath: PlayerMovement
+      value: 
+      objectReference: {fileID: 894631241}
     - target: {fileID: 2501351449381872380, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
       propertyPath: target
       value: 
@@ -9429,6 +9436,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Evil Jeff (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1851407401903729776, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
+      propertyPath: PlayerMovement
+      value: 
+      objectReference: {fileID: 894631241}
     - target: {fileID: 2501351449381872380, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
       propertyPath: target
       value: 
@@ -10954,6 +10965,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Evil Jeff (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1851407401903729776, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
+      propertyPath: PlayerMovement
+      value: 
+      objectReference: {fileID: 894631241}
     - target: {fileID: 2501351449381872380, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
       propertyPath: target
       value: 
@@ -11063,6 +11078,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Evil Jeff
       objectReference: {fileID: 0}
+    - target: {fileID: 1851407401903729776, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
+      propertyPath: PlayerMovement
+      value: 
+      objectReference: {fileID: 894631241}
     - target: {fileID: 2501351449381872380, guid: 9aa6a97b0fd311243a2c4da4caf9af09, type: 3}
       propertyPath: target
       value: 

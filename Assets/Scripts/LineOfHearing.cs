@@ -2,29 +2,16 @@ using UnityEngine;
 using UnityEngine.Events;
 public class LineOfHearing : MonoBehaviour
 {
-    [SerializeField] LayerMask playerLayer;
     [SerializeField] UnityEvent PlayerHeard;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] PlayerMovement PlayerMovement;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     private void OnTriggerStay(Collider other)
     {
-        //if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
+        if (PlayerMovement.isSneaking != true)
         {
             Debug.Log("Herd Player");
             PlayerHeard?.Invoke();
         }
-        /*else
-        {
-            Debug.Log("Herd Something" + other.gameObject.layer);
-        }*/
+  
     }
 }
